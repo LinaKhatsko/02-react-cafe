@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import css from "./App.module.css";
 import CafeInfo from "../CafeInfo/CafeInfo";
 import VoteOptions from '../VoteOptions/VoteOptions';
@@ -7,11 +7,16 @@ import Notification from '../Notification/Notification';
 import type { Votes, VoteType } from "../../types/votes";
 
 const App = () => {
-  const [votes, setVotes] = useState<Votes>({
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  });
+    const [votes, setVotes] = useState<Votes>(() => {
+        const savedVotes = localStorage.getItem("feedback-votes");
+        return savedVotes
+            ? JSON.parse(savedVotes)
+            : { good: 0, neutral: 0, bad: 0 };
+    });
+
+    useEffect(() => {
+        localStorage.setItem("feedback-votes", JSON.stringify(votes));
+    }, [votes]);
 
   const handleVote = (type: VoteType) => {
     setVotes((prevVotes) => ({
